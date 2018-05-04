@@ -1,0 +1,11 @@
+{
+    "Version": 1.0,
+    "DeviceId": "3fbe1ef3-c12f-4e93-91d2-d2416f415ec8",
+    "LocationId": "2084ce15-fa0b-4219-846e-9ce203728895",
+    "SubmitDay": "2017-01-01",
+    "SubmitHour": "2017-01-01-05",
+    "SubmitMinute": "2017-01-01-05-35",
+    "SubmitSecond": "2017-01-01-05-35-15",
+    "TemperatureCelsius": 21.5,
+    "Humidity": 0.13
+  }
