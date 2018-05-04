@@ -8,6 +8,8 @@ public class DeviceRecording
 
     public Guid LocationId { get; set; }
 
+    public string DeviceLocationComposite { get; set; }
+
     public string SubmitDay { get; set; }
 
     public string SubmitHour { get; set; }

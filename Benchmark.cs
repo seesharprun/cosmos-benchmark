@@ -26,6 +26,7 @@ public class Benchmark
             recording.Version = 1.0d;
             recording.DeviceId = faker.PickRandom(potentialDeviceIds);
             recording.LocationId = faker.PickRandom(potentialLocationIds);
+            recording.DeviceLocationComposite = $"{recording.DeviceId}_{recording.LocationId}";
             DateTime submitTime = DateTime.Now;
             recording.SubmitDay = submitTime.ToString("yyyy-MM-dd");
             recording.SubmitHour = submitTime.ToString("yyyy-MM-dd-HH");
@@ -49,8 +50,8 @@ public class Benchmark
         int taskCount = settings.DegreeOfParallelism;
         if (settings.DegreeOfParallelism == -1)
         {
-            // set TaskCount = 10 for each 10k RUs, minimum 1, maximum 250
-            taskCount = Math.Max(collectionSetting.Throughput / 1000, 1);
+            // set TaskCount = 1 for each 1k RUs, minimum 1, maximum 250
+            taskCount = Math.Max(collectionSetting.Throughput / 100, 1);
             taskCount = Math.Min(taskCount, 250);
         }
 
@@ -59,7 +60,7 @@ public class Benchmark
         await Console.Out.WriteLineAsync($"Endpoint:\t\t{settings.EndpointUri}");
         await Console.Out.WriteLineAsync($"Database\t\t{settings.Database}");
         await Console.Out.WriteLineAsync($"Collection\t\t{collectionSetting.Id}");
-        await Console.Out.WriteLineAsync($"Partition Key:\t\t{collectionSetting.PartitionKey}");
+        await Console.Out.WriteLineAsync($"Partition Key:\t\t{String.Join(", ", collectionSetting.PartitionKeys)}");
         await Console.Out.WriteLineAsync($"Throughput:\t\t{collectionSetting.Throughput} Request Units per Second (RU/s)");
         await Console.Out.WriteLineAsync($"Insert Operation:\t{taskCount} Tasks Inserting {settings.NumberOfDocumentsToInsert} Documents Total");
         await Console.Out.WriteLineAsync("--------------------------------------------------------------------- ");
@@ -168,6 +169,7 @@ public class Benchmark
         await Console.Out.WriteLineAsync();
         await Console.Out.WriteLineAsync("Summary:");
         await Console.Out.WriteLineAsync("--------------------------------------------------------------------- ");
+        await Console.Out.WriteLineAsync($"Total Time Elapsed:\t{watch.Elapsed}");
         await Console.Out.WriteLineAsync($"Inserted {lastCount} docs @ {Math.Round(this.documentsInserted / watch.Elapsed.TotalSeconds)} writes/s, {Math.Round(ruPerSecond)} RU/s ({Math.Round(ruPerMonth / (1000 * 1000 * 1000))}B max monthly 1KB reads)");
         await Console.Out.WriteLineAsync("--------------------------------------------------------------------- ");
         await Console.Out.WriteLineAsync();
@@ -190,7 +192,7 @@ public class Benchmark
             Id = collectionSetting.Id,
             PartitionKey = new PartitionKeyDefinition
             {
-                Paths = new Collection<string> { collectionSetting.PartitionKey }
+                Paths = new Collection<string>(collectionSetting.PartitionKeys)
             } 
         };
         RequestOptions options = new RequestOptions
